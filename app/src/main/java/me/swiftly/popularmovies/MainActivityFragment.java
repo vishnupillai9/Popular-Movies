@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -53,11 +54,24 @@ public class MainActivityFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        // TODO: Obtain sort preference from shared preferences.
+        // Obtain sort preference from shared preferences.
+        String sortPreference = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext())
+                .getString(getString(R.string.pref_movie_sort_key), getString(R.string.pref_movie_sort_default_value));
 
-        final String SORT_BY_POPULARITY = "popular";
-        // TODO: Replace with actual sort preference obtained from settings activity.
-        checkConnectionAndRunTask(SORT_BY_POPULARITY);
+        updateTitle(sortPreference);
+        checkConnectionAndRunTask(sortPreference);
+    }
+
+    /**
+     * Updates action bar title according to sorting preference set.
+     * @param sortPreference The sorting preference that's set in the settings activity.
+     */
+    private void updateTitle(String sortPreference) {
+        if (sortPreference.equals(getString(R.string.pref_top_rated))) {
+            ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.top_rated_title));
+        } else {
+            ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.app_name));
+        }
     }
 
     /**

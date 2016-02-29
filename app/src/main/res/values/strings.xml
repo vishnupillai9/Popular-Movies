@@ -6,4 +6,20 @@
     <string name="connection_offline_message">Your internet connection appears to be offline.</string>
     <string name="retry">Retry</string>
     <string name="dismiss">Dismiss</string>
+
+    <!-- Strings related to Settings -->
+    <string name="title_activity_settings">Settings</string>
+    <string name="pref_movie_sort_key">sort_by</string>
+    <string name="pref_movie_sort_title">Sort By</string>
+    <string name="pref_popular">popular</string>
+    <string name="pref_top_rated">top_rated</string>
+    <string name="pref_movie_sort_default_value">@string/pref_popular</string>
+    <string-array name="pref_movie_sort_titles">
+        <item>Popularity</item>
+        <item>Rating</item>
+    </string-array>
+    <string-array name="pref_movie_sort_values">
+        <item>@string/pref_popular</item>
+        <item>@string/pref_top_rated</item>
+    </string-array>
 </resources>
