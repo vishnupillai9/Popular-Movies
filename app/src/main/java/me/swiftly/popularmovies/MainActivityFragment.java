@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -181,7 +182,6 @@ public class MainActivityFragment extends Fragment {
                 }
 
                 movieJsonStr = buffer.toString();
-                Log.v(LOG_TAG, movieJsonStr);
 
                 try {
                     movies = TmdbHelper.getMoviesFromJson(movieJsonStr);
@@ -220,7 +220,9 @@ public class MainActivityFragment extends Fragment {
             moviesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    // TODO: Show detail activity
+                    Intent intent = new Intent(getActivity().getApplicationContext(), DetailActivity.class);
+                    intent.putExtra(getString(R.string.detail_intent_extra_name), movies[position]);
+                    startActivity(intent);
                 }
             });
         }
