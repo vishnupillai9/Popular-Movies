@@ -181,6 +181,7 @@ public class MainActivityFragment extends Fragment {
                 }
 
                 movieJsonStr = buffer.toString();
+                Log.v(LOG_TAG, movieJsonStr);
 
                 try {
                     movies = TmdbHelper.getMoviesFromJson(movieJsonStr);
