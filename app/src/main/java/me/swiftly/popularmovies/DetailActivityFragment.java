@@ -1,9 +1,16 @@
 package me.swiftly.popularmovies;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.graphics.Palette;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.github.florent37.picassopalette.PicassoPalette;
 import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
@@ -25,8 +33,15 @@ public class DetailActivityFragment extends Fragment {
     @Bind(R.id.overview_text_view) TextView overviewTextView;
     @Bind(R.id.movie_rating_bar) RatingBar movieRatingBar;
     @Bind(R.id.release_date_text_view) TextView releaseDateTextView;
+    @Bind(R.id.app_bar) AppBarLayout appBar;
+    @Bind(R.id.fab) FloatingActionButton fab;
+    @Bind(R.id.overview_label) TextView overviewLabel;
+    @Bind(R.id.detail_label) TextView detailLabel;
+    @Bind(R.id.overview_card_view) CardView overviewCardView;
+    @Bind(R.id.detail_card_view) CardView detailCardView;
 
     TmdbMovie movie;
+    int colorPrimary, colorPrimaryDark, colorPrimaryLight;
 
     public DetailActivityFragment() {
     }
@@ -41,7 +56,19 @@ public class DetailActivityFragment extends Fragment {
         movie = (TmdbMovie) intent.getSerializableExtra(getString(R.string.detail_intent_extra_name));
 
         toolbarLayout.setTitle(movie.title);
-        Picasso.with(getActivity().getApplicationContext()).load(movie.backdropPath).into(backdropImageView);
+
+        Picasso.with(getActivity().getApplicationContext()).load(movie.backdropPath).into(backdropImageView,
+                PicassoPalette.with(movie.backdropPath, backdropImageView)
+                        .intoCallBack(
+                                new PicassoPalette.CallBack() {
+                                    @Override
+                                    public void onPaletteLoaded(Palette palette) {
+                                        setColors(palette);
+                                        colorUI();
+                                    }
+                                }
+                        )
+        );
 
         // TODO: Implement favorite button
 
@@ -50,5 +77,44 @@ public class DetailActivityFragment extends Fragment {
         releaseDateTextView.setText(movie.releaseDate);
 
         return rootView;
+    }
+
+    void setColors(Palette palette) {
+        colorPrimary = palette.getVibrantColor(PicassoPalette.Swatch.RGB);
+        colorPrimaryDark = palette.getDarkVibrantColor(PicassoPalette.Swatch.RGB);
+        colorPrimaryLight = palette.getLightVibrantColor(PicassoPalette.Swatch.RGB);
+
+        if (colorPrimary == 0 || colorPrimaryDark == 0) {
+            colorPrimary = palette.getMutedColor(PicassoPalette.Swatch.RGB);
+            colorPrimaryDark = palette.getDarkMutedColor(PicassoPalette.Swatch.RGB);
+        }
+
+        if (colorPrimaryLight == 0) {
+            colorPrimaryLight = palette.getLightMutedColor(PicassoPalette.Swatch.RGB);
+        }
+
+        if (colorPrimary == 0 || colorPrimaryDark == 0 || colorPrimaryLight == 0) {
+            colorPrimary = getResources().getColor(R.color.colorPrimary);
+            colorPrimaryDark = getResources().getColor(R.color.colorPrimaryDark);
+            colorPrimaryLight = getResources().getColor(R.color.colorAccent);
+        }
+    }
+
+    void colorUI() {
+        appBar.setBackgroundColor(colorPrimary);
+
+        toolbarLayout.setContentScrimColor(colorPrimary);
+        toolbarLayout.setStatusBarScrimColor(colorPrimaryDark);
+
+        fab.setBackgroundTintList(ColorStateList.valueOf(colorPrimaryLight));
+
+        overviewLabel.setTextColor(colorPrimaryDark);
+        detailLabel.setTextColor(colorPrimaryDark);
+
+        LayerDrawable stars = (LayerDrawable) movieRatingBar.getProgressDrawable();
+        stars.getDrawable(2).setColorFilter(colorPrimary, PorterDuff.Mode.SRC_ATOP);
+
+        overviewCardView.setVisibility(View.VISIBLE);
+        detailCardView.setVisibility(View.VISIBLE);
     }
 }
