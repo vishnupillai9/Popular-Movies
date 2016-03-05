@@ -13,6 +13,7 @@ MyTMDBApiKey="API_KEY"
 - [PicassoPalette](https://github.com/florent37/PicassoPalette)
 
 ## Screenshots
-<img src="../master/art/app-screenshot-1.png" width="280">
-<img src="../master/art/app-screenshot-2.png" width="280">
-<img src="../master/art/app-screenshot-3.png" width="280">
+<img src="../master/art/app-screenshot-1.png" width="360">
+<img src="../master/art/app-screenshot-4.png" width="360">
+<img src="../master/art/app-screenshot-2.png" width="360">
+<img src="../master/art/app-screenshot-3.png" width="360">
