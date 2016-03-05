@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
@@ -44,6 +45,7 @@ public class DetailActivityFragment extends Fragment {
     TmdbMovie movie;
     int colorPrimary, colorPrimaryDark, colorPrimaryLight;
     ProgressDialog progressDialog;
+    boolean isFavorite = false;
 
     public DetailActivityFragment() {
     }
@@ -83,7 +85,20 @@ public class DetailActivityFragment extends Fragment {
                         )
         );
 
-        // TODO: Implement favorite button
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isFavorite) {
+                    fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_black_48dp));
+                    Snackbar.make(getView(), getString(R.string.add_to_favorites_message), Snackbar.LENGTH_SHORT).show();
+                    isFavorite = true;
+                } else {
+                    fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_border_black_48dp));
+                    Snackbar.make(getView(), getString(R.string.remove_from_favorites_message), Snackbar.LENGTH_SHORT).show();
+                    isFavorite = false;
+                }
+            }
+        });
 
         overviewTextView.setText(movie.overview);
         movieRatingBar.setRating((float) movie.voteAverage);

@@ -33,6 +33,8 @@
     <string name="release_date">Release Date</string>
     <string name="placeholder_release_date">2015&#8211;12&#8211;25</string>
     <string name="cast">Cast</string>
+    <string name="add_to_favorites_message">You\'ve added this movie to your favorites!</string>
+    <string name="remove_from_favorites_message">You\'ve removed this movie from your favorites.</string>
 
     <string name="detail_intent_extra_name" translatable="false">movieData</string>
 </resources>
