@@ -1,5 +1,6 @@
 package me.swiftly.popularmovies;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
@@ -42,6 +43,7 @@ public class DetailActivityFragment extends Fragment {
 
     TmdbMovie movie;
     int colorPrimary, colorPrimaryDark, colorPrimaryLight;
+    ProgressDialog progressDialog;
 
     public DetailActivityFragment() {
     }
@@ -57,6 +59,10 @@ public class DetailActivityFragment extends Fragment {
 
         toolbarLayout.setTitle(movie.title);
 
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage(getString(R.string.loading_message));
+        progressDialog.show();
+
         Picasso.with(getActivity().getApplicationContext()).load(movie.backdropPath).into(backdropImageView,
                 PicassoPalette.with(movie.backdropPath, backdropImageView)
                         .intoCallBack(
@@ -65,6 +71,13 @@ public class DetailActivityFragment extends Fragment {
                                     public void onPaletteLoaded(Palette palette) {
                                         setColors(palette);
                                         colorUI();
+
+                                        overviewCardView.setVisibility(View.VISIBLE);
+                                        detailCardView.setVisibility(View.VISIBLE);
+
+                                        if (progressDialog.isShowing()) {
+                                            progressDialog.dismiss();
+                                        }
                                     }
                                 }
                         )
@@ -113,8 +126,5 @@ public class DetailActivityFragment extends Fragment {
 
         LayerDrawable stars = (LayerDrawable) movieRatingBar.getProgressDrawable();
         stars.getDrawable(2).setColorFilter(colorPrimary, PorterDuff.Mode.SRC_ATOP);
-
-        overviewCardView.setVisibility(View.VISIBLE);
-        detailCardView.setVisibility(View.VISIBLE);
     }
 }
