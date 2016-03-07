@@ -57,7 +57,7 @@ public class DetailActivityFragment extends Fragment {
         ButterKnife.bind(this, rootView);
 
         Intent intent = getActivity().getIntent();
-        movie = (TmdbMovie) intent.getSerializableExtra(getString(R.string.detail_intent_extra_name));
+        movie = intent.getParcelableExtra(getString(R.string.detail_intent_extra_name));
 
         toolbarLayout.setTitle(movie.title);
 
