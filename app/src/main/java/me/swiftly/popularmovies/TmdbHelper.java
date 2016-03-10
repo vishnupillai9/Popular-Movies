@@ -29,7 +29,6 @@ public class TMDBHelper {
         JSONArray resultsArray = movieJson.getJSONArray(TMDB_RESULTS);
 
         List<TMDBMovie> movies = new ArrayList<TMDBMovie>();
-        //TMDBMovie[] movies = new TMDBMovie[resultsArray.length()];
 
         for (int i = 0; i < resultsArray.length(); i++) {
             JSONObject result = resultsArray.getJSONObject(i);
@@ -45,7 +44,6 @@ public class TMDBHelper {
 
             TMDBMovie movie = new TMDBMovie(id, title, posterPath, backdropPath, overview,
                     releaseDate, popularity, voteAverage);
-            //movies[i] = movie;
             movies.add(movie);
         }
 

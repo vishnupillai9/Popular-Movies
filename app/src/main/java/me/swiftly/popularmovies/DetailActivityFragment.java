@@ -23,6 +23,8 @@ import android.widget.TextView;
 import com.github.florent37.picassopalette.PicassoPalette;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -43,7 +45,7 @@ public class DetailActivityFragment extends Fragment {
     @Bind(R.id.detail_card_view) CardView detailCardView;
 
     TMDBMovie movie;
-    int colorPrimary, colorPrimaryDark, colorPrimaryLight;
+    Integer colorPrimary, colorPrimaryDark, colorPrimaryLight;
     ProgressDialog progressDialog;
     boolean isFavorite = false;
 
@@ -71,7 +73,11 @@ public class DetailActivityFragment extends Fragment {
                                 new PicassoPalette.CallBack() {
                                     @Override
                                     public void onPaletteLoaded(Palette palette) {
-                                        setColors(palette);
+                                        HashMap<PaletteHelper.Color, Integer> colors = PaletteHelper.getColorsFromPalette(getActivity(), palette);
+                                        colorPrimary = colors.get(PaletteHelper.Color.PRIMARY);
+                                        colorPrimaryDark = colors.get(PaletteHelper.Color.DARK);
+                                        colorPrimaryLight = colors.get(PaletteHelper.Color.LIGHT);
+
                                         colorUI();
 
                                         overviewCardView.setVisibility(View.VISIBLE);
@@ -105,27 +111,6 @@ public class DetailActivityFragment extends Fragment {
         releaseDateTextView.setText(movie.releaseDate);
 
         return rootView;
-    }
-
-    void setColors(Palette palette) {
-        colorPrimary = palette.getVibrantColor(PicassoPalette.Swatch.RGB);
-        colorPrimaryDark = palette.getDarkVibrantColor(PicassoPalette.Swatch.RGB);
-        colorPrimaryLight = palette.getLightVibrantColor(PicassoPalette.Swatch.RGB);
-
-        if (colorPrimary == 0 || colorPrimaryDark == 0) {
-            colorPrimary = palette.getMutedColor(PicassoPalette.Swatch.RGB);
-            colorPrimaryDark = palette.getDarkMutedColor(PicassoPalette.Swatch.RGB);
-        }
-
-        if (colorPrimaryLight == 0) {
-            colorPrimaryLight = palette.getLightMutedColor(PicassoPalette.Swatch.RGB);
-        }
-
-        if (colorPrimary == 0 || colorPrimaryDark == 0 || colorPrimaryLight == 0) {
-            colorPrimary = getResources().getColor(R.color.colorPrimary);
-            colorPrimaryDark = getResources().getColor(R.color.colorPrimaryDark);
-            colorPrimaryLight = getResources().getColor(R.color.colorAccent);
-        }
     }
 
     void colorUI() {

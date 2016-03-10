@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -38,6 +39,7 @@ public class MainActivityFragment extends Fragment {
     @Bind(R.id.movies_grid_view) GridView moviesGridView;
 
     List<TMDBMovie> movies;
+    ImageAdapter adapter;
 
     public MainActivityFragment() {
     }
@@ -48,6 +50,8 @@ public class MainActivityFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, rootView);
+
+        movies = new ArrayList<TMDBMovie>();
 
         return rootView;
     }
@@ -212,12 +216,15 @@ public class MainActivityFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(final List<TMDBMovie> movies) {
+        protected void onPostExecute(final List<TMDBMovie> m) {
             if (progressDialog.isShowing()) {
                 progressDialog.dismiss();
             }
 
-            moviesGridView.setAdapter(new ImageAdapter(getActivity(), movies));
+            // TODO: Set adapter in onCreateView, and call notifyDataSetChanged here
+            adapter = new ImageAdapter(getActivity(), movies);
+            moviesGridView.setAdapter(adapter);
+
             moviesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
