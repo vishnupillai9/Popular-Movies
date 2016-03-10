@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -36,7 +37,7 @@ import butterknife.ButterKnife;
 public class MainActivityFragment extends Fragment {
     @Bind(R.id.movies_grid_view) GridView moviesGridView;
 
-    TmdbMovie[] movies;
+    List<TMDBMovie> movies;
 
     public MainActivityFragment() {
     }
@@ -128,7 +129,7 @@ public class MainActivityFragment extends Fragment {
         task.execute(sortPreference);
     }
 
-    public class FetchMovieTask extends AsyncTask<String, Void, TmdbMovie[]> {
+    public class FetchMovieTask extends AsyncTask<String, Void, List<TMDBMovie>> {
 
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
@@ -141,7 +142,7 @@ public class MainActivityFragment extends Fragment {
         }
 
         @Override
-        protected TmdbMovie[] doInBackground(String... params) {
+        protected List<TMDBMovie> doInBackground(String... params) {
 
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
@@ -152,7 +153,7 @@ public class MainActivityFragment extends Fragment {
             String sortPreference = params[0];
 
             try {
-                URL url = new URL(TmdbHelper.buildUrlForFetchingMovies(sortPreference));
+                URL url = new URL(TMDBHelper.buildUrlForFetchingMovies(sortPreference));
 
                 // Create the request to TheMovieDatabase, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -184,7 +185,7 @@ public class MainActivityFragment extends Fragment {
                 movieJsonStr = buffer.toString();
 
                 try {
-                    movies = TmdbHelper.getMoviesFromJson(movieJsonStr);
+                    movies = TMDBHelper.getMoviesFromJson(movieJsonStr);
                     return movies;
                 } catch (JSONException e) {
                     Log.e(LOG_TAG, e.getMessage(), e);
@@ -211,7 +212,7 @@ public class MainActivityFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(final TmdbMovie[] movies) {
+        protected void onPostExecute(final List<TMDBMovie> movies) {
             if (progressDialog.isShowing()) {
                 progressDialog.dismiss();
             }
@@ -221,7 +222,7 @@ public class MainActivityFragment extends Fragment {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent intent = new Intent(getActivity().getApplicationContext(), DetailActivity.class);
-                    intent.putExtra(getString(R.string.detail_intent_extra_name), movies[position]);
+                    intent.putExtra(getString(R.string.detail_intent_extra_name), movies.get(position));
                     startActivity(intent);
                 }
             });

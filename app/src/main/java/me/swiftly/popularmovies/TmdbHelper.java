@@ -6,12 +6,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by vishnu on 28/02/16.
  */
-public class TmdbHelper {
+public class TMDBHelper {
 
-    public static TmdbMovie[] getMoviesFromJson(String jsonStr) throws JSONException {
+    public static List<TMDBMovie> getMoviesFromJson(String jsonStr) throws JSONException {
         final String TMDB_RESULTS = "results";
         final String TMDB_ID = "id";
         final String TMDB_TITLE = "title";
@@ -25,7 +28,8 @@ public class TmdbHelper {
         JSONObject movieJson = new JSONObject(jsonStr);
         JSONArray resultsArray = movieJson.getJSONArray(TMDB_RESULTS);
 
-        TmdbMovie[] movies = new TmdbMovie[resultsArray.length()];
+        List<TMDBMovie> movies = new ArrayList<TMDBMovie>();
+        //TMDBMovie[] movies = new TMDBMovie[resultsArray.length()];
 
         for (int i = 0; i < resultsArray.length(); i++) {
             JSONObject result = resultsArray.getJSONObject(i);
@@ -39,9 +43,10 @@ public class TmdbHelper {
             double popularity = result.getDouble(TMDB_POPULARITY);
             double voteAverage = result.getDouble(TMDB_VOTE_AVERAGE);
 
-            TmdbMovie movie = new TmdbMovie(id, title, posterPath, backdropPath, overview,
+            TMDBMovie movie = new TMDBMovie(id, title, posterPath, backdropPath, overview,
                     releaseDate, popularity, voteAverage);
-            movies[i] = movie;
+            //movies[i] = movie;
+            movies.add(movie);
         }
 
         return movies;

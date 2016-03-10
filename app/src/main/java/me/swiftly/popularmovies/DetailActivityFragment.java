@@ -42,7 +42,7 @@ public class DetailActivityFragment extends Fragment {
     @Bind(R.id.overview_card_view) CardView overviewCardView;
     @Bind(R.id.detail_card_view) CardView detailCardView;
 
-    TmdbMovie movie;
+    TMDBMovie movie;
     int colorPrimary, colorPrimaryDark, colorPrimaryLight;
     ProgressDialog progressDialog;
     boolean isFavorite = false;

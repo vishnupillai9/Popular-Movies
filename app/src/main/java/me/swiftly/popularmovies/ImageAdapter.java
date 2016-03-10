@@ -12,6 +12,8 @@ import android.widget.TextView;
 import com.github.florent37.picassopalette.PicassoPalette;
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -20,19 +22,19 @@ import butterknife.ButterKnife;
  */
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
-    private TmdbMovie[] movies;
+    private List<TMDBMovie> movies;
 
-    public ImageAdapter(Context c, TmdbMovie[] m) {
+    public ImageAdapter(Context c, List<TMDBMovie> m) {
         mContext = c;
         movies = m;
     }
 
     public int getCount() {
-        return movies.length;
+        return movies.size();
     }
 
     public Object getItem(int position) {
-        return movies[position];
+        return movies.get(position);
     }
 
     public long getItemId(int position) {
@@ -41,7 +43,7 @@ public class ImageAdapter extends BaseAdapter {
 
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
-        TmdbMovie movie = (TmdbMovie) getItem(position);
+        TMDBMovie movie = (TMDBMovie) getItem(position);
         final MovieGridViewHolder viewHolder;
 
         if (convertView == null) {

@@ -6,7 +6,7 @@ import android.os.Parcelable;
 /**
  * Created by vishnu on 28/02/16.
  */
-public class TmdbMovie implements Parcelable {
+public class TMDBMovie implements Parcelable {
     int id;
     String title;
     String posterPath;
@@ -16,7 +16,7 @@ public class TmdbMovie implements Parcelable {
     double popularity;
     double voteAverage;
 
-    public TmdbMovie(int id, String title, String posterPath, String backdropPath, String overview, String releaseDate, double popularity, double voteAverage) {
+    public TMDBMovie(int id, String title, String posterPath, String backdropPath, String overview, String releaseDate, double popularity, double voteAverage) {
         this.id = id;
         this.title = title;
         this.posterPath = posterPath;
@@ -27,7 +27,7 @@ public class TmdbMovie implements Parcelable {
         this.voteAverage = voteAverage;
     }
 
-    protected TmdbMovie(Parcel in) {
+    protected TMDBMovie(Parcel in) {
         id = in.readInt();
         title = in.readString();
         posterPath = in.readString();
@@ -56,15 +56,15 @@ public class TmdbMovie implements Parcelable {
     }
 
     @SuppressWarnings("unused")
-    public static final Parcelable.Creator<TmdbMovie> CREATOR = new Parcelable.Creator<TmdbMovie>() {
+    public static final Parcelable.Creator<TMDBMovie> CREATOR = new Parcelable.Creator<TMDBMovie>() {
         @Override
-        public TmdbMovie createFromParcel(Parcel in) {
-            return new TmdbMovie(in);
+        public TMDBMovie createFromParcel(Parcel in) {
+            return new TMDBMovie(in);
         }
 
         @Override
-        public TmdbMovie[] newArray(int size) {
-            return new TmdbMovie[size];
+        public TMDBMovie[] newArray(int size) {
+            return new TMDBMovie[size];
         }
     };
 }
