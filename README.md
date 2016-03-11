@@ -11,6 +11,7 @@ MyTMDBApiKey="API_KEY"
 - [ButterKnife](https://github.com/JakeWharton/butterknife)
 - [Picasso](https://github.com/square/picasso)
 - [PicassoPalette](https://github.com/florent37/PicassoPalette)
+- [Retrofit](https://github.com/square/retrofit)
 
 ## Screenshots
 <img src="../master/art/app-screenshot-1.png" width="360">
