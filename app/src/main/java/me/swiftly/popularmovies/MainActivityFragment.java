@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -18,19 +17,16 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
-import org.json.JSONException;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -38,8 +34,12 @@ import butterknife.ButterKnife;
 public class MainActivityFragment extends Fragment {
     @Bind(R.id.movies_grid_view) GridView moviesGridView;
 
-    List<TMDBMovie> movies;
+    public static final String BASE_URL = "http://api.themoviedb.org/3/";
+
+    List<TMDbMovie> movies;
     ImageAdapter adapter;
+    Call<TMDbResponse> call;
+    ProgressDialog progressDialog;
 
     public MainActivityFragment() {
     }
@@ -51,7 +51,19 @@ public class MainActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, rootView);
 
-        movies = new ArrayList<TMDBMovie>();
+        movies = new ArrayList<TMDbMovie>();
+
+        adapter = new ImageAdapter(getActivity(), movies);
+        moviesGridView.setAdapter(adapter);
+
+        moviesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity().getApplicationContext(), DetailActivity.class);
+                intent.putExtra(getString(R.string.detail_intent_extra_name), movies.get(position));
+                startActivity(intent);
+            }
+        });
 
         return rootView;
     }
@@ -129,110 +141,33 @@ public class MainActivityFragment extends Fragment {
      * Executes FetchMovieTask to get movies from TheMovieDatabase.
      */
     private void runTask(String sortPreference) {
-        FetchMovieTask task = new FetchMovieTask();
-        task.execute(sortPreference);
-    }
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        TMDbService.MovieApiEndpointInterface apiService = retrofit.create(TMDbService.MovieApiEndpointInterface.class);
 
-    public class FetchMovieTask extends AsyncTask<String, Void, List<TMDBMovie>> {
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage(getString(R.string.loading_message));
+        progressDialog.show();
 
-        private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
+        call = apiService.getMovies(sortPreference, BuildConfig.TMDB_API_KEY);
+        call.enqueue(new Callback<TMDbResponse>() {
+            @Override
+            public void onResponse(Call<TMDbResponse> call, Response<TMDbResponse> response) {
+                TMDbResponse responseBody = response.body();
+                movies.addAll(responseBody.results);
+                adapter.notifyDataSetChanged();
 
-        ProgressDialog progressDialog = new ProgressDialog(getActivity());
-
-        @Override
-        protected void onPreExecute() {
-            progressDialog.setMessage(getString(R.string.loading_message));
-            progressDialog.show();
-        }
-
-        @Override
-        protected List<TMDBMovie> doInBackground(String... params) {
-
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-
-            // Will contain the raw JSON response as a string.
-            String movieJsonStr = null;
-
-            String sortPreference = params[0];
-
-            try {
-                URL url = new URL(TMDBHelper.buildUrlForFetchingMovies(sortPreference));
-
-                // Create the request to TheMovieDatabase, and open the connection
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    return null;
-                }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
-                    buffer.append(line + "\n");
-                }
-
-                if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
-                    return null;
-                }
-
-                movieJsonStr = buffer.toString();
-
-                try {
-                    movies = TMDBHelper.getMoviesFromJson(movieJsonStr);
-                    return movies;
-                } catch (JSONException e) {
-                    Log.e(LOG_TAG, e.getMessage(), e);
-                }
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the movie data, there's no point in attemping
-                // to parse it.
-                return null;
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
-                    }
+                if (progressDialog.isShowing()) {
+                    progressDialog.dismiss();
                 }
             }
 
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(final List<TMDBMovie> m) {
-            if (progressDialog.isShowing()) {
-                progressDialog.dismiss();
+            @Override
+            public void onFailure(Call<TMDbResponse> call, Throwable t) {
+                Log.e("getMovies threw", t.getMessage());
             }
-
-            // TODO: Set adapter in onCreateView, and call notifyDataSetChanged here
-            adapter = new ImageAdapter(getActivity(), movies);
-            moviesGridView.setAdapter(adapter);
-
-            moviesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent intent = new Intent(getActivity().getApplicationContext(), DetailActivity.class);
-                    intent.putExtra(getString(R.string.detail_intent_extra_name), movies.get(position));
-                    startActivity(intent);
-                }
-            });
-        }
+        });
     }
 }

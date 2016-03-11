@@ -22,9 +22,9 @@ import butterknife.ButterKnife;
  */
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
-    private List<TMDBMovie> movies;
+    private List<TMDbMovie> movies;
 
-    public ImageAdapter(Context c, List<TMDBMovie> m) {
+    public ImageAdapter(Context c, List<TMDbMovie> m) {
         mContext = c;
         movies = m;
     }
@@ -43,7 +43,7 @@ public class ImageAdapter extends BaseAdapter {
 
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
-        TMDBMovie movie = (TMDBMovie) getItem(position);
+        TMDbMovie movie = (TMDbMovie) getItem(position);
         final MovieGridViewHolder viewHolder;
 
         if (convertView == null) {
@@ -57,8 +57,7 @@ public class ImageAdapter extends BaseAdapter {
             viewHolder = (MovieGridViewHolder) convertView.getTag();
         }
 
-        String imageUrl = movie.posterPath;
-
+        String imageUrl = TMDbHelper.buildImageUrl(movie.posterPath, 342);
         Picasso.with(mContext).load(imageUrl).into(viewHolder.posterImageView,
                 PicassoPalette.with(imageUrl, viewHolder.posterImageView)
                         .use(PicassoPalette.Profile.VIBRANT)

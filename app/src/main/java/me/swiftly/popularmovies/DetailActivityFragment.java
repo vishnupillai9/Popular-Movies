@@ -44,7 +44,7 @@ public class DetailActivityFragment extends Fragment {
     @Bind(R.id.overview_card_view) CardView overviewCardView;
     @Bind(R.id.detail_card_view) CardView detailCardView;
 
-    TMDBMovie movie;
+    TMDbMovie movie;
     Integer colorPrimary, colorPrimaryDark, colorPrimaryLight;
     ProgressDialog progressDialog;
     boolean isFavorite = false;
@@ -67,8 +67,9 @@ public class DetailActivityFragment extends Fragment {
         progressDialog.setMessage(getString(R.string.loading_message));
         progressDialog.show();
 
-        Picasso.with(getActivity().getApplicationContext()).load(movie.backdropPath).into(backdropImageView,
-                PicassoPalette.with(movie.backdropPath, backdropImageView)
+        String backdropImageUrl = TMDbHelper.buildImageUrl(movie.backdropPath, 780);
+        Picasso.with(getActivity().getApplicationContext()).load(backdropImageUrl).into(backdropImageView,
+                PicassoPalette.with(backdropImageUrl, backdropImageView)
                         .intoCallBack(
                                 new PicassoPalette.CallBack() {
                                     @Override

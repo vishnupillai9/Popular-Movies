@@ -3,31 +3,26 @@ package me.swiftly.popularmovies;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by vishnu on 28/02/16.
  */
-public class TMDBMovie implements Parcelable {
+public class TMDbMovie implements Parcelable {
     int id;
     String title;
+    @SerializedName("poster_path")
     String posterPath;
+    @SerializedName("backdrop_path")
     String backdropPath;
     String overview;
+    @SerializedName("release_date")
     String releaseDate;
     double popularity;
+    @SerializedName("vote_average")
     double voteAverage;
 
-    public TMDBMovie(int id, String title, String posterPath, String backdropPath, String overview, String releaseDate, double popularity, double voteAverage) {
-        this.id = id;
-        this.title = title;
-        this.posterPath = posterPath;
-        this.backdropPath = backdropPath;
-        this.overview = overview;
-        this.releaseDate = releaseDate;
-        this.popularity = popularity;
-        this.voteAverage = voteAverage;
-    }
-
-    protected TMDBMovie(Parcel in) {
+    protected TMDbMovie(Parcel in) {
         id = in.readInt();
         title = in.readString();
         posterPath = in.readString();
@@ -56,15 +51,15 @@ public class TMDBMovie implements Parcelable {
     }
 
     @SuppressWarnings("unused")
-    public static final Parcelable.Creator<TMDBMovie> CREATOR = new Parcelable.Creator<TMDBMovie>() {
+    public static final Parcelable.Creator<TMDbMovie> CREATOR = new Parcelable.Creator<TMDbMovie>() {
         @Override
-        public TMDBMovie createFromParcel(Parcel in) {
-            return new TMDBMovie(in);
+        public TMDbMovie createFromParcel(Parcel in) {
+            return new TMDbMovie(in);
         }
 
         @Override
-        public TMDBMovie[] newArray(int size) {
-            return new TMDBMovie[size];
+        public TMDbMovie[] newArray(int size) {
+            return new TMDbMovie[size];
         }
     };
 }
