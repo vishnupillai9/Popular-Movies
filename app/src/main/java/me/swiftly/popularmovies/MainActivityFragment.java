@@ -26,15 +26,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
     @Bind(R.id.movies_grid_view) GridView moviesGridView;
-
-    public static final String BASE_URL = "http://api.themoviedb.org/3/";
 
     List<TMDbMovie> movies;
     ImageAdapter adapter;
@@ -138,13 +135,10 @@ public class MainActivityFragment extends Fragment {
     }
 
     /**
-     * Executes FetchMovieTask to get movies from TheMovieDatabase.
+     * Uses Retrofit to get movies from TheMovieDatabase.
      */
     private void runTask(String sortPreference) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        Retrofit retrofit = TMDbHelper.buildRetrofit();
         TMDbService.MovieApiEndpointInterface apiService = retrofit.create(TMDbService.MovieApiEndpointInterface.class);
 
         progressDialog = new ProgressDialog(getActivity());

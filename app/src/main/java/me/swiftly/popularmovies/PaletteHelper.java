@@ -17,6 +17,12 @@ public class PaletteHelper {
         LIGHT
     }
 
+    /**
+     * Returns a primary, dark and light color from the palette given.
+     * @param context The context of the activity that's calling this method.
+     * @param palette The palette from which the colors are to be obtained.
+     * @return HashMap containing the colors.
+     */
     public static HashMap<Color, Integer> getColorsFromPalette(Context context, Palette palette) {
         HashMap<Color, Integer> colors = new HashMap<Color, Integer>();
 
