@@ -4,6 +4,7 @@
     <string name="top_rated_title">Top Rated Movies</string>
     <string name="loading_message">Loading. Please wait&#8230;</string>
     <string name="connection_offline_message">Your internet connection appears to be offline.</string>
+    <string name="invalid_api_key_message">Invalid API key: You must be granted a valid key.</string>
     <string name="retry">Retry</string>
     <string name="dismiss">Dismiss</string>
 

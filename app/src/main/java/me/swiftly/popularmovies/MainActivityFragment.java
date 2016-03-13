@@ -149,9 +149,33 @@ public class MainActivityFragment extends Fragment {
         call.enqueue(new Callback<TMDbResponse>() {
             @Override
             public void onResponse(Call<TMDbResponse> call, Response<TMDbResponse> response) {
-                TMDbResponse responseBody = response.body();
-                movies.addAll(responseBody.results);
-                adapter.notifyDataSetChanged();
+                if (response.isSuccess()) {
+                    TMDbResponse responseBody = response.body();
+                    movies.addAll(responseBody.results);
+                    adapter.notifyDataSetChanged();
+                } else if (response.code() == 401) {
+                        new AlertDialog.Builder(getActivity())
+                                .setTitle(R.string.app_name)
+                                .setMessage(R.string.invalid_api_key_message)
+                                .setNegativeButton(R.string.dismiss, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .show();
+                } else {
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.app_name)
+                            .setMessage(String.format("Error %d", response.code()))
+                            .setNegativeButton(R.string.dismiss, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .show();
+                }
 
                 if (progressDialog.isShowing()) {
                     progressDialog.dismiss();
