@@ -37,6 +37,7 @@ public class MainActivityFragment extends Fragment {
     ImageAdapter adapter;
     Call<TMDbResponse> call;
     ProgressDialog progressDialog;
+    DialogInterface.OnClickListener dialogOnClickListener;
 
     public MainActivityFragment() {
     }
@@ -70,10 +71,19 @@ public class MainActivityFragment extends Fragment {
         super.onStart();
 
         // Obtain sort preference from shared preferences.
-        String sortPreference = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext())
+        final String sortPreference = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext())
                 .getString(getString(R.string.pref_movie_sort_key), getString(R.string.pref_movie_sort_default_value));
 
         updateTitle(sortPreference);
+
+        dialogOnClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                checkConnectionAndRunTask(sortPreference);
+            }
+        };
+
         checkConnectionAndRunTask(sortPreference);
     }
 
@@ -96,23 +106,7 @@ public class MainActivityFragment extends Fragment {
         if (isOnline()) {
             runTask(sortPreference);
         } else {
-            new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.app_name)
-                    .setMessage(R.string.connection_offline_message)
-                    .setPositiveButton(R.string.retry, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            checkConnectionAndRunTask(sortPreference);
-                        }
-                    })
-                    .setNegativeButton(R.string.dismiss, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .show();
+            showAlertDialog(getString(R.string.connection_offline_message), dialogOnClickListener);
         }
     }
 
@@ -137,13 +131,21 @@ public class MainActivityFragment extends Fragment {
     /**
      * Uses Retrofit to get movies from TheMovieDatabase.
      */
-    private void runTask(String sortPreference) {
+    private void runTask(final String sortPreference) {
         Retrofit retrofit = TMDbHelper.buildRetrofit();
         TMDbService.MovieApiEndpointInterface apiService = retrofit.create(TMDbService.MovieApiEndpointInterface.class);
 
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage(getString(R.string.loading_message));
         progressDialog.show();
+
+        final DialogInterface.OnClickListener alertButtonOnClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                runTask(sortPreference);
+            }
+        };
 
         call = apiService.getMovies(sortPreference, BuildConfig.TMDB_API_KEY);
         call.enqueue(new Callback<TMDbResponse>() {
@@ -154,27 +156,9 @@ public class MainActivityFragment extends Fragment {
                     movies.addAll(responseBody.results);
                     adapter.notifyDataSetChanged();
                 } else if (response.code() == 401) {
-                        new AlertDialog.Builder(getActivity())
-                                .setTitle(R.string.app_name)
-                                .setMessage(R.string.invalid_api_key_message)
-                                .setNegativeButton(R.string.dismiss, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                })
-                                .show();
+                    showAlertDialog(getString(R.string.invalid_api_key_message), dialogOnClickListener);
                 } else {
-                    new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.app_name)
-                            .setMessage(String.format("Error %d", response.code()))
-                            .setNegativeButton(R.string.dismiss, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            })
-                            .show();
+                    showAlertDialog("Error " + response.code(), dialogOnClickListener);
                 }
 
                 if (progressDialog.isShowing()) {
@@ -187,5 +171,19 @@ public class MainActivityFragment extends Fragment {
                 Log.e("getMovies threw", t.getMessage());
             }
         });
+    }
+
+    private void showAlertDialog(String message, DialogInterface.OnClickListener onClickListener) {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.app_name)
+                .setMessage(message)
+                .setPositiveButton(R.string.retry, onClickListener)
+                .setNegativeButton(R.string.dismiss, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 }
