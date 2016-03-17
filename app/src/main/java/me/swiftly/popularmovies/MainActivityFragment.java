@@ -139,14 +139,6 @@ public class MainActivityFragment extends Fragment {
         progressDialog.setMessage(getString(R.string.loading_message));
         progressDialog.show();
 
-        final DialogInterface.OnClickListener alertButtonOnClickListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                runTask(sortPreference);
-            }
-        };
-
         call = apiService.getMovies(sortPreference, BuildConfig.TMDB_API_KEY);
         call.enqueue(new Callback<TMDbResponse>() {
             @Override
