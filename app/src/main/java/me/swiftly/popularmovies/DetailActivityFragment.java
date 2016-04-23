@@ -3,22 +3,20 @@ package me.swiftly.popularmovies;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.graphics.Palette;
-import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RatingBar;
-import android.widget.TextView;
 
 import com.github.florent37.picassopalette.PicassoPalette;
 import com.squareup.picasso.Picasso;
@@ -32,17 +30,13 @@ import butterknife.ButterKnife;
  * A placeholder fragment containing a simple view.
  */
 public class DetailActivityFragment extends Fragment {
+    @Bind(R.id.nested_scroll_view) NestedScrollView scrollView;
     @Bind(R.id.toolbar_layout) CollapsingToolbarLayout toolbarLayout;
     @Bind(R.id.detail_view_backdrop_image) ImageView backdropImageView;
-    @Bind(R.id.overview_text_view) TextView overviewTextView;
-    @Bind(R.id.movie_rating_bar) RatingBar movieRatingBar;
-    @Bind(R.id.release_date_text_view) TextView releaseDateTextView;
     @Bind(R.id.app_bar) AppBarLayout appBar;
     @Bind(R.id.fab) FloatingActionButton fab;
-    @Bind(R.id.overview_label) TextView overviewLabel;
-    @Bind(R.id.detail_label) TextView detailLabel;
-    @Bind(R.id.overview_card_view) CardView overviewCardView;
-    @Bind(R.id.detail_card_view) CardView detailCardView;
+    @Bind(R.id.tab_layout) TabLayout tabLayout;
+    @Bind(R.id.viewpager) ViewPager viewPager;
 
     TMDbMovie movie;
     Integer colorPrimary, colorPrimaryDark, colorPrimaryLight;
@@ -63,26 +57,37 @@ public class DetailActivityFragment extends Fragment {
 
         toolbarLayout.setTitle(movie.title);
 
+        OverviewFragment.movie = movie;
+        TrailersFragment.movie = movie;
+        ReviewsFragment.movie = movie;
+
+        scrollView.setFillViewport(true);
+
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage(getString(R.string.loading_message));
         progressDialog.show();
 
-        String backdropImageUrl = TMDbHelper.buildImageUrl(movie.backdropPath, 780);
+        String backdropImageUrl = TMDbHelper.buildImageUrlForPoster(movie.backdropPath, 780);
         Picasso.with(getActivity().getApplicationContext()).load(backdropImageUrl).into(backdropImageView,
                 PicassoPalette.with(backdropImageUrl, backdropImageView)
                         .intoCallBack(
                                 new PicassoPalette.CallBack() {
                                     @Override
                                     public void onPaletteLoaded(Palette palette) {
-                                        HashMap<PaletteHelper.Color, Integer> colors = PaletteHelper.getColorsFromPalette(getActivity(), palette);
+                                        HashMap<PaletteHelper.Color, Integer> colors
+                                                = PaletteHelper.getColorsFromPalette(getActivity(), palette);
                                         colorPrimary = colors.get(PaletteHelper.Color.PRIMARY);
                                         colorPrimaryDark = colors.get(PaletteHelper.Color.DARK);
                                         colorPrimaryLight = colors.get(PaletteHelper.Color.LIGHT);
 
-                                        colorUI();
+                                        OverviewFragment.colorPrimary = colorPrimary;
+                                        OverviewFragment.colorPrimaryDark = colorPrimaryDark;
 
-                                        overviewCardView.setVisibility(View.VISIBLE);
-                                        detailCardView.setVisibility(View.VISIBLE);
+                                        viewPager.setAdapter(new DetailFragmentPagerAdapter(getActivity().getSupportFragmentManager(),
+                                                getActivity()));
+                                        tabLayout.setupWithViewPager(viewPager);
+
+                                        colorFragment();
 
                                         if (progressDialog.isShowing()) {
                                             progressDialog.dismiss();
@@ -107,25 +112,16 @@ public class DetailActivityFragment extends Fragment {
             }
         });
 
-        overviewTextView.setText(movie.overview);
-        movieRatingBar.setRating((float) movie.voteAverage);
-        releaseDateTextView.setText(movie.releaseDate);
-
         return rootView;
     }
 
-    void colorUI() {
+    void colorFragment() {
         appBar.setBackgroundColor(colorPrimary);
 
         toolbarLayout.setContentScrimColor(colorPrimary);
         toolbarLayout.setStatusBarScrimColor(colorPrimaryDark);
 
+        tabLayout.setBackgroundColor(colorPrimary);
         fab.setBackgroundTintList(ColorStateList.valueOf(colorPrimaryLight));
-
-        overviewLabel.setTextColor(colorPrimaryDark);
-        detailLabel.setTextColor(colorPrimaryDark);
-
-        LayerDrawable stars = (LayerDrawable) movieRatingBar.getProgressDrawable();
-        stars.getDrawable(2).setColorFilter(colorPrimary, PorterDuff.Mode.SRC_ATOP);
     }
 }

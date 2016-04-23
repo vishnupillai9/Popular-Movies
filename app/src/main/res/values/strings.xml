@@ -24,7 +24,7 @@
     </string-array>
 
     <string name="title_activity_detail">Detail</string>
-    <string name="overview">Overview</string>
+    <string name="overview">Synopsis</string>
     <string name="placeholder_overview_text">
         In the 1820s, a frontiersman, Hugh Glass, sets out on a path of vengeance against those who
         left him for dead after a bear mauling.

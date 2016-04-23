@@ -11,9 +11,12 @@ import retrofit2.http.Query;
 public class TMDbService {
     public interface MovieApiEndpointInterface {
         @GET("movie/{sort}")
-        Call<TMDbResponse> getMovies(
-                @Path("sort") String sort,
-                @Query("api_key") String apiKey
-        );
+        Call<TMDbMovieResponse> getMovies(@Path("sort") String sort, @Query("api_key") String apiKey);
+
+        @GET("movie/{id}/videos")
+        Call<TMDbTrailerResponse> getTrailers(@Path("id") int id, @Query("api_key") String apiKey);
+
+        @GET("movie/{id}/reviews")
+        Call<TMDbReviewResponse> getReviews(@Path("id") int id, @Query("api_key") String apiKey);
     }
 }

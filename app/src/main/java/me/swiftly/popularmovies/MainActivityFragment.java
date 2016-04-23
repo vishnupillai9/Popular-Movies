@@ -25,7 +25,6 @@ import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -35,7 +34,7 @@ public class MainActivityFragment extends Fragment {
 
     List<TMDbMovie> movies;
     ImageAdapter adapter;
-    Call<TMDbResponse> call;
+    Call<TMDbMovieResponse> call;
     ProgressDialog progressDialog;
     DialogInterface.OnClickListener dialogOnClickListener;
 
@@ -132,19 +131,16 @@ public class MainActivityFragment extends Fragment {
      * Uses Retrofit to get movies from TheMovieDatabase.
      */
     private void runTask(final String sortPreference) {
-        Retrofit retrofit = TMDbHelper.buildRetrofit();
-        TMDbService.MovieApiEndpointInterface apiService = retrofit.create(TMDbService.MovieApiEndpointInterface.class);
-
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage(getString(R.string.loading_message));
         progressDialog.show();
 
-        call = apiService.getMovies(sortPreference, BuildConfig.TMDB_API_KEY);
-        call.enqueue(new Callback<TMDbResponse>() {
+        call = TMDbHelper.getApiService().getMovies(sortPreference, BuildConfig.TMDB_API_KEY);
+        call.enqueue(new Callback<TMDbMovieResponse>() {
             @Override
-            public void onResponse(Call<TMDbResponse> call, Response<TMDbResponse> response) {
+            public void onResponse(Call<TMDbMovieResponse> call, Response<TMDbMovieResponse> response) {
                 if (response.isSuccess()) {
-                    TMDbResponse responseBody = response.body();
+                    TMDbMovieResponse responseBody = response.body();
                     movies.addAll(responseBody.results);
                     adapter.notifyDataSetChanged();
                 } else if (response.code() == 401) {
@@ -159,7 +155,7 @@ public class MainActivityFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<TMDbResponse> call, Throwable t) {
+            public void onFailure(Call<TMDbMovieResponse> call, Throwable t) {
                 Log.e("getMovies threw", t.getMessage());
             }
         });

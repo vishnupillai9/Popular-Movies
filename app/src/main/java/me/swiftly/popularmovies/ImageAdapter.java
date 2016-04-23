@@ -57,7 +57,7 @@ public class ImageAdapter extends BaseAdapter {
             viewHolder = (MovieGridViewHolder) convertView.getTag();
         }
 
-        String imageUrl = TMDbHelper.buildImageUrl(movie.posterPath, 342);
+        String imageUrl = TMDbHelper.buildImageUrlForPoster(movie.posterPath, 342);
         Picasso.with(mContext).load(imageUrl).into(viewHolder.posterImageView,
                 PicassoPalette.with(imageUrl, viewHolder.posterImageView)
                         .use(PicassoPalette.Profile.VIBRANT)

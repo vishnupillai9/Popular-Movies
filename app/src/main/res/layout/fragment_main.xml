@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:horizontalSpacing="10dp"
-    android:numColumns="2"
+    android:numColumns="@integer/numColumns"
     android:padding="8dp"
     android:verticalSpacing="10dp"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"

@@ -5,6 +5,9 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by vishnu on 28/02/16.
  */
@@ -21,6 +24,8 @@ public class TMDbMovie implements Parcelable {
     double popularity;
     @SerializedName("vote_average")
     double voteAverage;
+    @SerializedName("genre_ids")
+    List<Integer> genreIds;
 
     protected TMDbMovie(Parcel in) {
         id = in.readInt();
@@ -31,6 +36,12 @@ public class TMDbMovie implements Parcelable {
         releaseDate = in.readString();
         popularity = in.readDouble();
         voteAverage = in.readDouble();
+        if (in.readByte() == 0x01) {
+            genreIds = new ArrayList<Integer>();
+            in.readList(genreIds, Integer.class.getClassLoader());
+        } else {
+            genreIds = null;
+        }
     }
 
     @Override
@@ -48,6 +59,12 @@ public class TMDbMovie implements Parcelable {
         dest.writeString(releaseDate);
         dest.writeDouble(popularity);
         dest.writeDouble(voteAverage);
+        if (genreIds == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(genreIds);
+        }
     }
 
     @SuppressWarnings("unused")
